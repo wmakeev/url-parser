@@ -1,6 +1,6 @@
 {
   "name": "moysklad-url-parser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Разбор с формирование url сервиса МойСклад",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
