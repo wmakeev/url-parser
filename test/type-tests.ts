@@ -37,7 +37,7 @@ const param2Value: PaymentStatusFilterValue = filterParam2!.getValue()
 const param2Str: string = filterParam2!.toString()
 
 // @ts-expect-error
-filter.addFilter(FilterParameter.Period, filterParam2!)
+filter.addFilter(FilterParameter.GlobalPeriod, filterParam2!)
 
 const instance: MoyskladFilterUrl = filter.addFilter(
   FilterParameter.PaymentStatus,

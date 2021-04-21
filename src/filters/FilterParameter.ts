@@ -1,15 +1,34 @@
 import { AgentFilter } from './AgentFilter'
 import { AgentIdFilter } from './AgentIdFilter'
 import { CustomerOrderShippingStatusFilter } from './CustomerOrderShippingStatusFilter'
+import { EnumSelectFilter } from './EnumSelectFilter'
 import { GoodFilter } from './GoodFilter'
 import { PaymentStatusFilter } from './PaymentStatusFilter'
 import { PeriodFilter } from './PeriodFilter'
+
+/** Типы сущностей в фильтре 'global_entityTypeFilter' отчета turnover */
+export type TurnoverEntityTypes =
+  | 'Supply'
+  | 'PurchaseReturn'
+  | 'Demand'
+  | 'SalesReturn'
+  | 'Loss'
+  | 'Enter'
+  | 'Move'
+  | 'Processing'
+  | 'RetailDemand'
+  | 'RetailSalesReturn'
 
 export enum FilterParameter {
   /**
    * Временной период
    */
-  Period = 'global_periodFilter',
+  GlobalPeriod = 'global_periodFilter',
+
+  /**
+   * Временной период
+   */
+  Period = 'periodFilter',
 
   /**
    * Оплата:
@@ -200,7 +219,10 @@ export enum FilterParameter {
   FinanceAgent = 'global_financeAgentFilter',
 
   /** Организация (Платежи) */
-  FinanceSubCompany = 'global_financeSubcompanyFilter'
+  FinanceSubCompany = 'global_financeSubcompanyFilter',
+
+  /** Обороты (Тип документа) */
+  TurnoverEntityType = 'global_entityTypeFilter'
 }
 
 // TODO Можно ли описать типы без дублирования сущностей?
@@ -208,6 +230,7 @@ export enum FilterParameter {
 export type FilterParameterType = {
   [FilterParameter.AgentSource]: AgentFilter
   [FilterParameter.AgentTarget]: AgentFilter
+  [FilterParameter.GlobalPeriod]: PeriodFilter
   [FilterParameter.Period]: PeriodFilter
   [FilterParameter.PaymentStatus]: PaymentStatusFilter
   [FilterParameter.CustomerOrderShippingStatus]: CustomerOrderShippingStatusFilter
@@ -217,11 +240,13 @@ export type FilterParameterType = {
   [FilterParameter.Agent]: AgentFilter
   [FilterParameter.FinanceAgent]: AgentFilter
   [FilterParameter.FinanceSubCompany]: AgentFilter
+  [FilterParameter.TurnoverEntityType]: EnumSelectFilter<TurnoverEntityTypes>
 }
 
 export const FilterParameterClass = {
   [FilterParameter.AgentSource]: AgentFilter,
   [FilterParameter.AgentTarget]: AgentFilter,
+  [FilterParameter.GlobalPeriod]: PeriodFilter,
   [FilterParameter.Period]: PeriodFilter,
   [FilterParameter.PaymentStatus]: PaymentStatusFilter,
   [FilterParameter.CustomerOrderShippingStatus]: CustomerOrderShippingStatusFilter,
@@ -230,5 +255,6 @@ export const FilterParameterClass = {
   [FilterParameter.AgentId]: AgentIdFilter,
   [FilterParameter.Agent]: AgentFilter,
   [FilterParameter.FinanceAgent]: AgentFilter,
-  [FilterParameter.FinanceSubCompany]: AgentFilter
+  [FilterParameter.FinanceSubCompany]: AgentFilter,
+  [FilterParameter.TurnoverEntityType]: EnumSelectFilter
 }
