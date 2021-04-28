@@ -10,6 +10,9 @@ export type PaymentStatusFilterValue = StatusFilterValue<PaymentStatus>
 
 export class PaymentStatusFilter extends StatusFilter<PaymentStatus> {
   constructor(initial: string | PaymentStatusFilterValue) {
-    super(initial, 'PaymentStatus', PaymentStatus)
+    super(initial, {
+      statusName: 'PaymentStatus',
+      statusEnum: PaymentStatus
+    })
   }
 }

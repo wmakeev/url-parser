@@ -46,11 +46,13 @@ export type PeriodFilterObject =
 
 export class PeriodFilterSerializer
   implements FilterSerializer<PeriodFilterObject> {
+  constructor(private options?: PeriodFilterOptions) {}
+
   serialize(filter: PeriodFilterObject): string {
     if (filter.mode === PeriodFilterMode.INSIDE_PERIOD) {
       let rawFilter: PeriodFilterRaw = [
-        getTimeString(filter.from),
-        getTimeString(filter.to),
+        getTimeString(filter.from, this.options?.timezoneOffset),
+        getTimeString(filter.to, this.options?.timezoneOffset),
         filter.mode
       ]
 
@@ -85,8 +87,8 @@ export class PeriodFilterSerializer
     } else {
       const periodFilter: PeriodFilterObject = {
         mode,
-        from: parseTimeString(rawFilter[0]),
-        to: parseTimeString(rawFilter[1])
+        from: parseTimeString(rawFilter[0], this.options?.timezoneOffset),
+        to: parseTimeString(rawFilter[1], this.options?.timezoneOffset)
       }
 
       if (rawFilter[3] === 'PRESETS') {
@@ -101,8 +103,15 @@ export class PeriodFilterSerializer
   }
 }
 
+export interface PeriodFilterOptions {
+  timezoneOffset: number
+}
+
 export class PeriodFilter extends Filter<PeriodFilterObject> {
-  constructor(initial: string | PeriodFilterObject) {
-    super(initial, new PeriodFilterSerializer())
+  constructor(
+    initial: string | PeriodFilterObject,
+    options?: PeriodFilterOptions
+  ) {
+    super(initial, new PeriodFilterSerializer(options))
   }
 }

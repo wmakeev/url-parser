@@ -2,20 +2,31 @@ function padStart(n: number) {
   return String(n).padStart(2, '0')
 }
 
-export function getTimeString(date: Date | null): string | '' {
+/**
+ * Возвращает время в формате строки запроса в url
+ *
+ * @param date Дата для преобразования в строку
+ * @param timezoneOffset Смещение в минутах от исходной даты (кол-во минут которые нужно добавить к указанной дате `date`, чтобы результирующая дата была в нужном часовом поясе)
+ */
+export function getTimeString(
+  date: Date | null,
+  timezoneOffset = 0
+): string | '' {
   if (date === null) return ''
 
+  const _date = new Date(+date + timezoneOffset * 60 * 1000)
+
   return [
-    padStart(date.getDate()),
+    padStart(_date.getDate()),
     '.',
-    padStart(date.getMonth() + 1),
+    padStart(_date.getMonth() + 1),
     '.',
-    date.getFullYear(),
+    _date.getFullYear(),
     ' ',
-    padStart(date.getHours()),
+    padStart(_date.getHours()),
     ':',
-    padStart(date.getMinutes()),
+    padStart(_date.getMinutes()),
     ':',
-    padStart(date.getSeconds())
+    padStart(_date.getSeconds())
   ].join('')
 }

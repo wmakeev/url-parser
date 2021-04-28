@@ -3,21 +3,31 @@ import { MOYSKLAD_ENDPOINT } from './defaults'
 import {
   FilterParameter,
   FilterParameterClass,
+  FilterParameterClassOptions,
   FilterParameterType
 } from './filters/FilterParameter'
-import { MoyskladUrl, parseUrl } from './parseUrl'
+import { MoyskladUrlObject, parseUrl } from './parseUrl'
 import { ensureExist } from './tools/ensure'
 
-interface InitialFilter {
+export interface InitialFilter {
   endpoint?: string
-  hash: MoyskladUrl['hash']
-  path?: MoyskladUrl['path']
-  query?: MoyskladUrl['query']
+  hash: MoyskladUrlObject['hash']
+  path?: MoyskladUrlObject['path']
+  query?: MoyskladUrlObject['query']
 }
 
-export class MoyskladFilterUrl {
-  private urlObject: MoyskladUrl
+/**
+ * Класс дает набор методов для формирования url МойСклад или получения частей
+ * из уже сформированного url.
+ */
+export class MoyskladUrl {
+  private urlObject: MoyskladUrlObject
 
+  /**
+   * Создание экземпляра описывающего фильтр МойСклад
+   *
+   * @param filter url строка или объект с описанием компонентов url
+   */
   constructor(filter: string | InitialFilter) {
     if (typeof filter === 'string') {
       this.urlObject = parseUrl(filter)
@@ -58,18 +68,22 @@ export class MoyskladFilterUrl {
     return this
   }
 
-  // TODO Нужно расширить тип и убрать any ..
+  // FIXME Нужно расширить тип и убрать any ..
   // .. вероятно если нет класса, то возвращать строку (такое можно затипизировать?)
   getFilter<T extends FilterParameter>(
-    parameter: T
+    parameter: T,
+    options?: T extends keyof FilterParameterClassOptions
+      ? FilterParameterClassOptions[T]
+      : never
   ): FilterParameterType[T] | null {
     const filterString = this.getHashQuery()?.[parameter]
 
+    // TODO Нужно расширить тип и убрать any
     /* eslint @typescript-eslint/no-explicit-any:0 */
-    const FilterClass: any = FilterParameterClass[parameter]
+    const FilterClass: any = FilterParameterClass[parameter] //
 
     if (filterString && FilterClass) {
-      return new FilterClass(filterString)
+      return new FilterClass(filterString as string, options)
     } else {
       return null
     }

@@ -2,20 +2,20 @@ import test from 'blue-tape'
 import {
   EnumSelectFilter,
   FilterParameter,
-  MoyskladFilterUrl,
+  MoyskladUrl,
   PeriodFilter,
   PeriodFilterMode
 } from '../src'
 
-test('MoyskladFilterUrl (turnover) #1', t => {
-  const msFilterUrl = new MoyskladFilterUrl({
+test('MoyskladUrl (turnover) #1', t => {
+  const msFilterUrl = new MoyskladUrl({
     hash: { path: ['turnover'] }
   })
 
   // Добавление фильтра
   msFilterUrl
     .addFilter(
-      FilterParameter.Period,
+      FilterParameter.PeriodFilter,
       new PeriodFilter({
         mode: PeriodFilterMode.INSIDE_PERIOD,
         from: new Date(2021, 3, 20),
@@ -23,7 +23,7 @@ test('MoyskladFilterUrl (turnover) #1', t => {
       })
     )
     .addFilter(
-      FilterParameter.TurnoverEntityType,
+      FilterParameter.Turnover_GlobalEntityTypeFilter,
       new EnumSelectFilter('Demand')
     )
 

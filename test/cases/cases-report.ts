@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import { URL } from 'url'
 import _ from 'lodash'
-import { MoyskladFilterUrl } from '../../src/MoyskladFilterUrl'
+import { MoyskladUrl } from '../../src/MoyskladUrl'
 
 const urlsText = fs.readFileSync(
   path.join(process.cwd(), 'tests/cases/urls.txt'),
@@ -16,7 +16,7 @@ const params = new Set(
     .flatMap(url => {
       const href = new URL(url).href
 
-      const filter = new MoyskladFilterUrl(href)
+      const filter = new MoyskladUrl(href)
 
       const path = filter.getHashPath()?.join('/') ?? '(no)'
 

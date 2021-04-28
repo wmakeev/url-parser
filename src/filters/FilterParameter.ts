@@ -4,10 +4,10 @@ import { CustomerOrderShippingStatusFilter } from './CustomerOrderShippingStatus
 import { EnumSelectFilter } from './EnumSelectFilter'
 import { GoodFilter } from './GoodFilter'
 import { PaymentStatusFilter } from './PaymentStatusFilter'
-import { PeriodFilter } from './PeriodFilter'
+import { PeriodFilter, PeriodFilterOptions } from './PeriodFilter'
 
 /** Типы сущностей в фильтре 'global_entityTypeFilter' отчета turnover */
-export type TurnoverEntityTypes =
+export type StockOperationEntityTypes =
   | 'Supply'
   | 'PurchaseReturn'
   | 'Demand'
@@ -19,16 +19,19 @@ export type TurnoverEntityTypes =
   | 'RetailDemand'
   | 'RetailSalesReturn'
 
+// TODO Добавить другие типы документов
+export type OperationEntityTypes = StockOperationEntityTypes
+
 export enum FilterParameter {
   /**
    * Временной период
    */
-  GlobalPeriod = 'global_periodFilter',
+  GlobalPeriodFilter = 'global_periodFilter',
 
   /**
    * Временной период
    */
-  Period = 'periodFilter',
+  PeriodFilter = 'periodFilter',
 
   /**
    * Оплата:
@@ -36,7 +39,7 @@ export enum FilterParameter {
    * - Частично оплачено `partlyPaid,`
    * - Не оплачено `unpaid,`
    */
-  PaymentStatus = 'global_paymentStatusFilter',
+  GlobalPaymentStatusFilter = 'global_paymentStatusFilter',
 
   /**
    * Отгружено:
@@ -45,19 +48,19 @@ export enum FilterParameter {
    * - Не отгружено `unshipped,`
    * - Просрочено `overdue,`
    */
-  CustomerOrderShippingStatus = 'global_customerOrderShippingStatusFilter',
+  GlobalCustomerOrderShippingStatusFilter = 'global_customerOrderShippingStatusFilter',
 
   /**
    * План. дата отгрузки
    */
-  DeliveryPeriod = 'global_deliveryPeriodFilter',
+  GlobalDeliveryPeriodFilter = 'global_deliveryPeriodFilter',
 
   /**
    * Товар или группа
    *
    * Type: `MultiselectFilter<`Good` | `Feature`>`
    */
-  GoodFilter = 'global_goodIdFilter',
+  GlobalGoodIdFilter = 'global_goodIdFilter',
 
   /**
    * Тип возврата
@@ -86,7 +89,7 @@ export enum FilterParameter {
    *
    * Type: `MultiselectFilter<MyCompany | Company>`
    */
-  AgentSource = 'global_agentSourceFilter',
+  GlobalAgentSourceFilter = 'global_agentSourceFilter',
 
   /**
    * Группа контрагента
@@ -129,7 +132,7 @@ export enum FilterParameter {
    *
    * `MyCompany`
    */
-  AgentTarget = 'global_agentTargetFilter',
+  GlobalAgentTargetFilter = 'global_agentTargetFilter',
 
   /**
    * Счет организации
@@ -210,51 +213,66 @@ export enum FilterParameter {
   /**
    * Контрагент (Движение денежных средств)
    */
-  AgentId = 'agentIdFilter',
+  GlobalAgentIdFilter = 'agentIdFilter',
 
   /** Контрагент (Документы) */
-  Agent = 'global_agentFilter',
+  GlobalAgentFilter = 'global_agentFilter',
 
   /** Контрагент (Платежи) */
-  FinanceAgent = 'global_financeAgentFilter',
+  GlobalFinanceAgentFilter = 'global_financeAgentFilter',
 
   /** Организация (Платежи) */
-  FinanceSubCompany = 'global_financeSubcompanyFilter',
+  GlobalFinanceSubCompanyFilter = 'global_financeSubcompanyFilter',
 
   /** Обороты (Тип документа) */
-  TurnoverEntityType = 'global_entityTypeFilter'
+  Turnover_GlobalEntityTypeFilter = 'global_entityTypeFilter',
+
+  /** Документы (Тип документа) */
+  Operation_GlobalEntityTypeFilter = 'global_entityTypeFilter'
 }
 
 // TODO Можно ли описать типы без дублирования сущностей?
 
 export type FilterParameterType = {
-  [FilterParameter.AgentSource]: AgentFilter
-  [FilterParameter.AgentTarget]: AgentFilter
-  [FilterParameter.GlobalPeriod]: PeriodFilter
-  [FilterParameter.Period]: PeriodFilter
-  [FilterParameter.PaymentStatus]: PaymentStatusFilter
-  [FilterParameter.CustomerOrderShippingStatus]: CustomerOrderShippingStatusFilter
-  [FilterParameter.DeliveryPeriod]: PeriodFilter
-  [FilterParameter.GoodFilter]: GoodFilter
-  [FilterParameter.AgentId]: AgentIdFilter
-  [FilterParameter.Agent]: AgentFilter
-  [FilterParameter.FinanceAgent]: AgentFilter
-  [FilterParameter.FinanceSubCompany]: AgentFilter
-  [FilterParameter.TurnoverEntityType]: EnumSelectFilter<TurnoverEntityTypes>
+  [FilterParameter.GlobalAgentSourceFilter]: AgentFilter
+  [FilterParameter.GlobalAgentTargetFilter]: AgentFilter
+  [FilterParameter.GlobalPeriodFilter]: PeriodFilter
+  [FilterParameter.PeriodFilter]: PeriodFilter
+  [FilterParameter.GlobalPaymentStatusFilter]: PaymentStatusFilter
+  [FilterParameter.GlobalCustomerOrderShippingStatusFilter]: CustomerOrderShippingStatusFilter
+  [FilterParameter.GlobalDeliveryPeriodFilter]: PeriodFilter
+  [FilterParameter.GlobalGoodIdFilter]: GoodFilter
+  [FilterParameter.GlobalAgentIdFilter]: AgentIdFilter
+  [FilterParameter.GlobalAgentFilter]: AgentFilter
+  [FilterParameter.GlobalFinanceAgentFilter]: AgentFilter
+  [FilterParameter.GlobalFinanceSubCompanyFilter]: AgentFilter
+  [FilterParameter.Turnover_GlobalEntityTypeFilter]: EnumSelectFilter<
+    StockOperationEntityTypes
+  >
+  [FilterParameter.Operation_GlobalEntityTypeFilter]: EnumSelectFilter<
+    OperationEntityTypes
+  >
 }
 
 export const FilterParameterClass = {
-  [FilterParameter.AgentSource]: AgentFilter,
-  [FilterParameter.AgentTarget]: AgentFilter,
-  [FilterParameter.GlobalPeriod]: PeriodFilter,
-  [FilterParameter.Period]: PeriodFilter,
-  [FilterParameter.PaymentStatus]: PaymentStatusFilter,
-  [FilterParameter.CustomerOrderShippingStatus]: CustomerOrderShippingStatusFilter,
-  [FilterParameter.DeliveryPeriod]: PeriodFilter,
-  [FilterParameter.GoodFilter]: GoodFilter,
-  [FilterParameter.AgentId]: AgentIdFilter,
-  [FilterParameter.Agent]: AgentFilter,
-  [FilterParameter.FinanceAgent]: AgentFilter,
-  [FilterParameter.FinanceSubCompany]: AgentFilter,
-  [FilterParameter.TurnoverEntityType]: EnumSelectFilter
+  [FilterParameter.GlobalAgentSourceFilter]: AgentFilter,
+  [FilterParameter.GlobalAgentTargetFilter]: AgentFilter,
+  [FilterParameter.GlobalPeriodFilter]: PeriodFilter,
+  [FilterParameter.PeriodFilter]: PeriodFilter,
+  [FilterParameter.GlobalPaymentStatusFilter]: PaymentStatusFilter,
+  [FilterParameter.GlobalCustomerOrderShippingStatusFilter]: CustomerOrderShippingStatusFilter,
+  [FilterParameter.GlobalDeliveryPeriodFilter]: PeriodFilter,
+  [FilterParameter.GlobalGoodIdFilter]: GoodFilter,
+  [FilterParameter.GlobalAgentIdFilter]: AgentIdFilter,
+  [FilterParameter.GlobalAgentFilter]: AgentFilter,
+  [FilterParameter.GlobalFinanceAgentFilter]: AgentFilter,
+  [FilterParameter.GlobalFinanceSubCompanyFilter]: AgentFilter,
+  [FilterParameter.Turnover_GlobalEntityTypeFilter]: EnumSelectFilter,
+  [FilterParameter.Operation_GlobalEntityTypeFilter]: EnumSelectFilter
+}
+
+export type FilterParameterClassOptions = {
+  [FilterParameter.GlobalPeriodFilter]: PeriodFilterOptions
+  [FilterParameter.PeriodFilter]: PeriodFilterOptions
+  [FilterParameter.GlobalDeliveryPeriodFilter]: PeriodFilterOptions
 }

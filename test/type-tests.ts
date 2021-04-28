@@ -7,12 +7,12 @@ import type {
   PaymentStatusFilter,
   PaymentStatusFilterValue
 } from '../src/filters/PaymentStatusFilter'
-import { MoyskladFilterUrl } from '../src/MoyskladFilterUrl'
+import { MoyskladUrl } from '../src/MoyskladUrl'
 
 const url =
   'https://online.moysklad.ru/app/#customerorder?global_customerOrderShippingStatusFilter=partiallyshipped,'
 
-const filter = new MoyskladFilterUrl(url)
+const filter = new MoyskladUrl(url)
 
 const path: string[] = filter.getPath()
 
@@ -25,11 +25,11 @@ const hashQuery:
   | undefined = filter.getHashQuery()
 
 const filterParam1: AgentFilter | null = filter.getFilter(
-  FilterParameter.AgentSource
+  FilterParameter.GlobalAgentSourceFilter
 )
 
 const filterParam2: PaymentStatusFilter | null = filter.getFilter(
-  FilterParameter.PaymentStatus
+  FilterParameter.GlobalPaymentStatusFilter
 )
 
 const param2Value: PaymentStatusFilterValue = filterParam2!.getValue()
@@ -37,10 +37,10 @@ const param2Value: PaymentStatusFilterValue = filterParam2!.getValue()
 const param2Str: string = filterParam2!.toString()
 
 // @ts-expect-error
-filter.addFilter(FilterParameter.GlobalPeriod, filterParam2!)
+filter.addFilter(FilterParameter.GlobalPeriodFilter, filterParam2!)
 
-const instance: MoyskladFilterUrl = filter.addFilter(
-  FilterParameter.PaymentStatus,
+const instance: MoyskladUrl = filter.addFilter(
+  FilterParameter.GlobalPaymentStatusFilter,
   filterParam2!
 )
 

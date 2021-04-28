@@ -10,7 +10,10 @@
       "name": "Launch TS",
       "program": "${file}",
       "envFile": "${workspaceFolder}/.env",
-      "runtimeArgs": [],
+      "runtimeArgs": [
+        "-r",
+        "source-map-support/register"
+      ],
       "preLaunchTask": "tsc: build - tsconfig.json",
       "outFiles": [
         "${workspaceFolder}/build/**/*.js"

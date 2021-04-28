@@ -4,14 +4,17 @@ import { parseHashQuery } from './parseHashQuery'
 // https://regex101.com/r/WZzjbn/3
 const URL_REGEX = /(?<proto>http|https):\/\/(?<endpoint>[\w.]+)\/(?<path>[\w/]+)(?<query>\?.+)?(?<hash>#.+)?$/
 
-export interface MoyskladUrl {
+/**
+ * Представление ссылки МойСклад в виде объекта
+ */
+export interface MoyskladUrlObject {
   endpoint: string
   path: string[]
   query?: Record<string, string | null>
   hash: Hash
 }
 
-export function parseUrl(url: string): MoyskladUrl {
+export function parseUrl(url: string): MoyskladUrlObject {
   // TODO Возможно, предварительно пропускать ссылку через модуль URL
   const match = URL_REGEX.exec(url)
 
@@ -29,7 +32,7 @@ export function parseUrl(url: string): MoyskladUrl {
     throw new Error(`Ошибка разбора url - ${url}`)
   }
 
-  const result: MoyskladUrl = {
+  const result: MoyskladUrlObject = {
     endpoint,
     path: path.split('/').filter(it => it),
     hash: parseHash(hash ?? '#')

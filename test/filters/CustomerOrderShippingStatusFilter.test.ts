@@ -1,5 +1,5 @@
 import test from 'blue-tape'
-import { MoyskladFilterUrl } from '../../src/MoyskladFilterUrl'
+import { MoyskladUrl } from '../../src/MoyskladUrl'
 import { FilterParameter } from '../../src/filters/FilterParameter'
 
 import {
@@ -11,10 +11,10 @@ test('CustomerOrderShippingStatusFilter', t => {
   const url =
     'https://online.moysklad.ru/app/#customerorder?global_customerOrderShippingStatusFilter=partiallyshipped,'
 
-  const filter = new MoyskladFilterUrl(url)
+  const filter = new MoyskladUrl(url)
 
   const filterParam = filter.getFilter(
-    FilterParameter.CustomerOrderShippingStatus
+    FilterParameter.GlobalCustomerOrderShippingStatusFilter
   )
 
   if (filterParam) {
@@ -26,7 +26,10 @@ test('CustomerOrderShippingStatusFilter', t => {
       'should deserialize'
     )
 
-    filter.addFilter(FilterParameter.CustomerOrderShippingStatus, filterParam)
+    filter.addFilter(
+      FilterParameter.GlobalCustomerOrderShippingStatusFilter,
+      filterParam
+    )
 
     const serialized = filter.toString()
 

@@ -6,12 +6,13 @@ import { AgentFilter } from '../src/filters/AgentFilter'
 import { FilterParameter } from '../src/filters/FilterParameter'
 import { MultiselectFilterMode } from '../src/filters/MultiselectFilter'
 
-import { MoyskladFilterUrl } from '../src/MoyskladFilterUrl'
+import { MoyskladUrl } from '../src/MoyskladUrl'
+import { PeriodFilter, PeriodFilterMode } from '../src'
 
-test('MoyskladFilterUrl #1', t => {
-  const { AgentSource: AgentSourceFilter } = FilterParameter
+test('MoyskladUrl #1', t => {
+  const { GlobalAgentSourceFilter: AgentSourceFilter } = FilterParameter
 
-  const msFilterUrl = new MoyskladFilterUrl({
+  const msFilterUrl = new MoyskladUrl({
     hash: { path: ['customerorder'] }
   })
 
@@ -38,14 +39,14 @@ test('MoyskladFilterUrl #1', t => {
   t.end()
 })
 
-test('MoyskladFilterUrl #2', t => {
-  const { AgentSource: AgentSourceFilter } = FilterParameter
+test('MoyskladUrl #2', t => {
+  const { GlobalAgentSourceFilter: AgentSourceFilter } = FilterParameter
 
   const url1 = new URL(
     "https://online.moysklad.ru/app/#customerorder?global_agentSourceFilter=%5B69a1f634-69c0-11e3-6cd1-7054d21a8d1e%5C%5C,%5Bfoo%5D%20slash%5B%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5D%20coma%5B%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C,%5D%20semi%5B%5C%5C%5C%5C;%5D%20amp%5B%5C&%5D%20plus%5B+%5D%20sym%5B%C2%A7%C2%B1!@%23$%25%5E*()_-=%7C'%22:%7B%7D%3C%3E.%60~?/%5D%20%7C%20%5D%20%5B%5C%5C,3670%5C%5C,Company%5D,equals"
   ).href
 
-  const filter = new MoyskladFilterUrl(url1)
+  const filter = new MoyskladUrl(url1)
 
   const param1 = filter.getFilter(AgentSourceFilter)!
 
@@ -79,13 +80,58 @@ test('MoyskladFilterUrl #2', t => {
   t.end()
 })
 
-test('MoyskladFilterUrl (Opera url) #1', t => {
+test('MoyskladUrl (period filter with timezone)', t => {
+  t.plan(3)
+
+  const msUrl1 = new MoyskladUrl({ hash: { path: ['turnover'] } })
+
+  msUrl1.addFilter(
+    FilterParameter.PeriodFilter,
+    new PeriodFilter(
+      {
+        mode: PeriodFilterMode.INSIDE_PERIOD,
+        from: new Date(2021, 0, 2, 19, 51, 0),
+        to: new Date(2021, 0, 2, 20, 9, 0)
+      },
+      {
+        timezoneOffset: 60
+      }
+    )
+  )
+
+  const url1 = msUrl1.toString()
+
+  t.equal(
+    url1,
+    'https://online.moysklad.ru/app/#turnover?periodFilter=02.01.2021%2020:51:00,02.01.2021%2021:09:00,inside_period'
+  )
+
+  const msUrl2 = new MoyskladUrl(url1)
+
+  const period1 = msUrl2.getFilter(FilterParameter.PeriodFilter)!.getValue()
+
+  const period2 = msUrl2
+    .getFilter(FilterParameter.PeriodFilter, {
+      timezoneOffset: 60
+    })!
+    .getValue()
+
+  if (period1.mode === PeriodFilterMode.INSIDE_PERIOD) {
+    t.equal(period1.from?.getHours(), 20)
+
+    if (period2.mode === PeriodFilterMode.INSIDE_PERIOD) {
+      t.equal(period2.from?.getHours(), 19)
+    }
+  }
+})
+
+test('MoyskladUrl (Opera url) #1', t => {
   const OPERA_URL =
     'https://online.moysklad.ru/app/#operation?global_agentFilter=%5Bba0bef8d-1687-11ea-0a80-065c0015b35d%5C%5C,(Орг.)%20РАСПРЕДЕЛЯЮЩАЯ%20ОРГАНИЗАЦИЯ%5C%5C,%5C%5C,MyCompany%5D,notequals&global_ownerGroupFilter=%5B0956718d-d318-11e5-7a69-97110000165f%5C%5C,Основной%5C%5C,%5C%5C,Group;e51060d6-577f-11e9-9109-f8fc00035ca3%5C%5C,Закупки%20и%20аудит%5C%5C,%5C%5C,Group%5D,equals'
 
-  const filter = new MoyskladFilterUrl(OPERA_URL)
+  const msUrl = new MoyskladUrl(OPERA_URL)
 
-  const query = filter.getHashQuery()
+  const query = msUrl.getHashQuery()
 
   t.deepEquals(
     query,
@@ -98,7 +144,7 @@ test('MoyskladFilterUrl (Opera url) #1', t => {
     'should decode query'
   )
 
-  const url1 = filter.toString()
+  const url1 = msUrl.toString()
 
   const CHROME_URL =
     'https://online.moysklad.ru/app/#operation?global_agentFilter=%5Bba0bef8d-1687-11ea-0a80-065c0015b35d%5C%5C,(%D0%9E%D1%80%D0%B3.)%20%D0%A0%D0%90%D0%A1%D0%9F%D0%A0%D0%95%D0%94%D0%95%D0%9B%D0%AF%D0%AE%D0%A9%D0%90%D0%AF%20%D0%9E%D0%A0%D0%93%D0%90%D0%9D%D0%98%D0%97%D0%90%D0%A6%D0%98%D0%AF%5C%5C,%5C%5C,MyCompany%5D,notequals&global_ownerGroupFilter=%5B0956718d-d318-11e5-7a69-97110000165f%5C%5C,%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D0%BD%D0%BE%D0%B9%5C%5C,%5C%5C,Group;e51060d6-577f-11e9-9109-f8fc00035ca3%5C%5C,%D0%97%D0%B0%D0%BA%D1%83%D0%BF%D0%BA%D0%B8%20%D0%B8%20%D0%B0%D1%83%D0%B4%D0%B8%D1%82%5C%5C,%5C%5C,Group%5D,equals'
@@ -114,11 +160,11 @@ test('MoyskladFilterUrl (Opera url) #1', t => {
   t.end()
 })
 
-test('MoyskladFilterUrl (Opera url) #2', t => {
+test('MoyskladUrl (Opera url) #2', t => {
   const OPERA_URL =
     'https://online.moysklad.ru/app/#customerorder?global_agentSourceFilter=%5B10b9b6e6-139d-11eb-0a80-02e9001de7ee%5C%5C,%5Bbaz%5D%20😁→➡️%EF%B8%8F©✗§1234567890-=qwertyuiop%5B%5Dasdfghjkl%5C%5C%5C%5C;\'%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C%60zxcvbnm%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C,./±!@%23$%25%5E%5C&*()_+QWERTYUIOP%7B%7DASDFGHJKL:"%7CZXCVBNM<>?>1234567890-=йцукенгшщзхъфывапролджэё%5Dячсмитьбю/<!"№%25:%5C%5C%5C%5C%5C%5C%5C%5C%5C%5C,.%5C%5C%5C%5C;()_+ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЁ%5BЯЧСМИТЬБЮ?%5C%5C,%5C%5C,Company%5D,equals'
 
-  const filter = new MoyskladFilterUrl(OPERA_URL)
+  const filter = new MoyskladUrl(OPERA_URL)
 
   const query = filter.getHashQuery()
 
@@ -147,12 +193,12 @@ test('MoyskladFilterUrl (Opera url) #2', t => {
   t.end()
 })
 
-test('MoyskladFilterUrl (http error)', t => {
+test('MoyskladUrl (http error)', t => {
   const url = 'http://online.moysklad.ru/app/#demand'
 
   t.throws(
     () => {
-      new MoyskladFilterUrl(url)
+      new MoyskladUrl(url)
     },
     /должен быть указан https протокол/,
     'should throw if http protocol'
@@ -161,9 +207,9 @@ test('MoyskladFilterUrl (http error)', t => {
   t.end()
 })
 
-test('MoyskladFilterUrl (cases)', t => {
+test('MoyskladUrl (cases)', t => {
   const urlsText = fs.readFileSync(
-    path.join(process.cwd(), 'tests/cases/urls.txt'),
+    path.join(process.cwd(), 'test/cases/urls.txt'),
     'utf8'
   )
 
@@ -173,7 +219,7 @@ test('MoyskladFilterUrl (cases)', t => {
     try {
       const url = new URL(urls[i]).href
 
-      const filter = new MoyskladFilterUrl(url)
+      const filter = new MoyskladUrl(url)
 
       const rebuilded = filter.toString()
 

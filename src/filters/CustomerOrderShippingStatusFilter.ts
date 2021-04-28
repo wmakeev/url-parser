@@ -15,6 +15,9 @@ export class CustomerOrderShippingStatusFilter extends StatusFilter<
   CustomerOrderShippingStatus
 > {
   constructor(initial: string | CustomerOrderShippingStatusFilterValue) {
-    super(initial, 'CustomerOrderShippingStatus', CustomerOrderShippingStatus)
+    super(initial, {
+      statusName: 'CustomerOrderShippingStatus',
+      statusEnum: CustomerOrderShippingStatus
+    })
   }
 }

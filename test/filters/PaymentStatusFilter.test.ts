@@ -1,5 +1,5 @@
 import test from 'blue-tape'
-import { MoyskladFilterUrl } from '../../src/MoyskladFilterUrl'
+import { MoyskladUrl } from '../../src/MoyskladUrl'
 import { FilterParameter } from '../../src/filters/FilterParameter'
 
 import {
@@ -11,9 +11,11 @@ test('PaymentStatusFilter', t => {
   const url =
     'https://online.moysklad.ru/app/#customerorder?global_paymentStatusFilter=paid,'
 
-  const filter = new MoyskladFilterUrl(url)
+  const filter = new MoyskladUrl(url)
 
-  const paymentStatusFilter = filter.getFilter(FilterParameter.PaymentStatus)
+  const paymentStatusFilter = filter.getFilter(
+    FilterParameter.GlobalPaymentStatusFilter
+  )
 
   if (paymentStatusFilter) {
     const paymentStatus: PaymentStatusFilterValue = paymentStatusFilter.getValue()
@@ -24,7 +26,10 @@ test('PaymentStatusFilter', t => {
       'should deserialize'
     )
 
-    filter.addFilter(FilterParameter.PaymentStatus, paymentStatusFilter)
+    filter.addFilter(
+      FilterParameter.GlobalPaymentStatusFilter,
+      paymentStatusFilter
+    )
 
     const serialized = filter.toString()
 

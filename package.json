@@ -1,6 +1,6 @@
 {
   "name": "moysklad-url-parser",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Разбор с формирование url сервиса МойСклад",
   "main": "build/src/index.js",
   "types": "build/src/index.d.ts",
@@ -10,10 +10,10 @@
   "scripts": {
     "compile": "tsc",
     "compile:prod": "rm -rf build/ && tsc --build tsconfig.prod.json",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "build": "npm run lint:fix && npm run compile",
-    "build:prod": "rm -rf build/ && npm run lint:fix && npm run compile:prod"
+    "lint": "eslint . --fix",
+    "build": "npm run lint && npm run compile",
+    "test": "npm run build && node ./build/test",
+    "build:prod": "npm run test && npm run compile:prod"
   },
   "keywords": [
     "moysklad",
@@ -37,7 +37,8 @@
     "eslint-plugin-prettier": "^3.1.4",
     "lodash": "^4.17.20",
     "prettier": "^2.1.2",
-    "typescript": "^4.0.3",
+    "source-map-support": "^0.5.19",
+    "typescript": "^4.2.4",
     "typescript-eslint-language-service": "^4.1.0"
   },
   "engines": {
